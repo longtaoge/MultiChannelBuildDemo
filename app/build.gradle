@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "24.0.2"
+    defaultConfig {
+        applicationId APPLICATIONID
+        minSdkVersion MINSDKVERSION as int
+        targetSdkVersion TARGETSDKVERSION as int
+        versionCode VERSIONCODE as int
+        versionName VERSIONNAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    //签名信息
+    signingConfigs {
+
+        release {
+
+            try {
+                storeFile file(STOREFILE)
+                storePassword STOREPASSWORD
+                keyAlias KEYALIAS
+                keyPassword STOREPASSWORD
+            } catch (ex) {
+
+            }
+
+
+        }
+
+        debug {
+            storeFile file(STOREFILE)
+            storePassword STOREPASSWORD
+            keyAlias KEYALIAS
+            keyPassword STOREPASSWORD
+
+        }
+
+
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    //渠道Flavors，我这里写了一些常用的，你们自己改
+    productFlavors {
+        Wandoujia {
+            signingConfig signingConfigs.release
+
+        }
+        Store360 {
+            signingConfig signingConfigs.release
+        }
+        QQ {
+            signingConfig signingConfigs.release
+        }
+
+
+    }
+    //这个是解决lint报错的代码
+    lintOptions {
+        abortOnError true
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
+    testCompile 'junit:junit:4.12'
+    compile 'com.umeng.analytics:analytics:latest.integration'
+}
+
+//替换AndroidManifest.xml的UMENG_CHANNEL_VALUE字符串为渠道名称 By Jason Yu
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        output.processManifest.doLast {
+            //${buildDir}是指./build文件夹
+            def manifestFile = "${buildDir}/intermediates/manifests/full/${variant.dirName}/AndroidManifest.xml"
+
+            //将字符串UMENG_CHANNEL_VALUE替换成flavor的名字
+            def updatedContent = new File(manifestFile).getText('UTF-8').replaceAll("UMENG_CHANNEL_VALUE", "${variant.productFlavors[0].name}")
+            new File(manifestFile).write(updatedContent, 'UTF-8')
+
+            //不需要再次指定
+            //variant.processResources.manifestFile = file("${buildDir}/manifests/${variant.dirName}/AndroidManifest.xml")
+
+        }
+    }
+}
