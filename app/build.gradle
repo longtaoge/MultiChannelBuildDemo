@@ -51,13 +51,16 @@ android {
     //渠道Flavors，我这里写了一些常用的，你们自己改
     productFlavors {
         Wandoujia {
+            applicationId APPLICATIONID4WANDOUJIA  // 区分包名
             signingConfig signingConfigs.release
 
         }
         Store360 {
             signingConfig signingConfigs.release
+            applicationId APPLICATIONID4STORE360
         }
         QQ {
+            applicationId APPLICATIONID4QQ
             signingConfig signingConfigs.release
         }
 

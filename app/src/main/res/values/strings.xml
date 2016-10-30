@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MultiChannelBuildDemo</string>
+    <string name="app_name">多渠道打包</string>
     <string name="action_settings">Settings</string>
 </resources>
